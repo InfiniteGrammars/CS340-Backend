@@ -1,7 +1,7 @@
 # CS340-Project
 
 ## Requirements
-Node v.18.17
+Node v.18.13
 
 ## Getting Started
 If you are running the server for the first time, first run:
