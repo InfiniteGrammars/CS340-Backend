@@ -12,6 +12,18 @@ app.get('/', (req, res) => {
   res.send('Bird App Administration'); //placeholder
 });
 
+/* queries for users */
+app.get('/get-users', (req, res) => {
+
+  //sql query to get all groups in the database and return them
+  const getUsers = 'select * from Users;';
+
+  db.pool.query(getUsers, function (err, results, fields) {
+    res.send(JSON.stringify(results));
+  });
+});
+
+
 /* queries for posts */
 
 app.get('/get-posts', (req, res) => {
@@ -66,8 +78,6 @@ app.post('/create-post', (req, res) => {
   //allows creation of new post
   const createPost = 'INSERT INTO Posts (user_id, post_body, time_posted, group_posted) VALUES (?, ?, ?, ?)';
   const data = [req.body.user_id, req.body.post_body, req.body.time_posted, req.body.group_posted];
-
-  console.log(req.body);
 
   db.pool.query(createPost, data, (err, results, fields) => {
     if (err) {
@@ -130,5 +140,5 @@ app.get('/get-groups', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server started. Listening on port 2112...`)
+  console.log(`Server started. Listening on port ${PORT}...`)
 });
