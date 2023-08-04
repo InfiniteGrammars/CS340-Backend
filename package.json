@@ -2,10 +2,10 @@
   "name": "cs340-group54-project",
   "version": "1.0.0",
   "description": "Final project for group 54 in CS340 Summer 2023",
-  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +18,10 @@
   },
   "homepage": "https://github.com/InfiniteGrammars/CS340-Project#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "forever": "^4.0.3",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "nodemon": "^3.0.1"
   }
 }

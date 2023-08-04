@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
+PORT = 2113;
 
 //connect to database
 const db = require('./database/db-connector');
@@ -10,6 +11,18 @@ const db = require('./database/db-connector');
 app.get('/', (req, res) => {
   res.send('Bird App Administration'); //placeholder
 });
+
+/* queries for users */
+app.get('/get-users', (req, res) => {
+
+  //sql query to get all groups in the database and return them
+  const getUsers = 'select * from Users;';
+
+  db.pool.query(getUsers, function (err, results, fields) {
+    res.send(JSON.stringify(results));
+  });
+});
+
 
 /* queries for posts */
 
@@ -66,8 +79,6 @@ app.post('/create-post', (req, res) => {
   const createPost = 'INSERT INTO Posts (user_id, post_body, time_posted, group_posted) VALUES (?, ?, ?, ?)';
   const data = [req.body.user_id, req.body.post_body, req.body.time_posted, req.body.group_posted];
 
-  console.log(req.body);
-
   db.pool.query(createPost, data, (err, results, fields) => {
     if (err) {
       res.status(500).send(
@@ -117,6 +128,17 @@ app.get('/update-post-group', (req, res) => {
 });
 
 
-app.listen(3000, () => {
-  console.log(`Server started. Listening on port 3000...`)
+/* queries for groups */
+app.get('/get-groups', (req, res) => {
+
+  //sql query to get all groups in the database and return them
+  const getGroups = 'select * from Groups;';
+
+  db.pool.query(getGroups, function (err, results, fields) {
+    res.send(JSON.stringify(results));
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server started. Listening on port ${PORT}...`)
 });
