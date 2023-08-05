@@ -19,7 +19,7 @@ create table `Users` (
     bio varchar(128),
     profile_pic blob,
     primary key (user_id)
-) engine = InnoDB default charset = utf8mb4 collate utf8mb4_unicode_ci; --allows for storing emojis
+); --allows for storing emojis
 
 drop table if exists `Groups`;
 create table `Groups` ( 
@@ -29,7 +29,7 @@ create table `Groups` (
     time_created datetime default now(),
     primary key (group_id), 
     foreign key (creator_id) references Users(user_id)
-)engine = InnoDB default charset = utf8mb4 collate utf8mb4_unicode_ci; 
+); 
 
 drop table if exists `Group_Members`;
 create table `Group_Members` ( 
@@ -52,7 +52,7 @@ create table `Posts` (
     primary key (post_id),
     foreign key (user_id) references Users(user_id), 
     foreign key (group_posted) references `Groups`(group_id) on delete set null
-)engine = InnoDB default charset = utf8mb4 collate utf8mb4_unicode_ci;
+);
 
 Drop table if exists `Direct_Messages`;
 create table `Direct_Messages` ( 
@@ -64,7 +64,7 @@ create table `Direct_Messages` (
     primary key (message_id),
     foreign key (sender_id) references Users(user_id),
     foreign key (receiver_id) references Users(user_id)
-)engine = InnoDB default charset = utf8mb4 collate utf8mb4_unicode_ci;
+);
 
 drop table if exists `Reports`;
 create table `Reports` ( 
@@ -74,7 +74,7 @@ create table `Reports` (
     notes longtext,
     primary key (report_id),
     foreign key (reported_post) references Posts(post_id) on delete cascade
-)engine = InnoDB default charset = utf8mb4 collate utf8mb4_unicode_ci;
+);
 
 drop table if exists `User_Reports`;
 create table `User_Reports` ( 
@@ -85,7 +85,7 @@ create table `User_Reports` (
     primary key (report_id, reporting_user), 
     foreign key (report_id) references Reports(report_id) on delete cascade,
     foreign key (reporting_user) references Users(user_id)
-)engine = InnoDB default charset = utf8mb4 collate utf8mb4_unicode_ci;
+);
 
 drop table if exists `Follows`;
 create table `Follows` ( 
