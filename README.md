@@ -12,7 +12,7 @@ If you are running the server for the first time, first run:
 To start the server:
 `npm start`
 
-Routes can be accessed locally at `localhost:3000`
+Routes can be accessed locally at `localhost:2113`
 
 ## Routes
 
