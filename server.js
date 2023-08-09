@@ -23,6 +23,17 @@ app.get('/get-users', (req, res) => {
   });
 });
 
+app.get('/get-user', (req, res) => {
+
+  //sql query to get all groups in the database and return them
+  const getUsers = `select * from Users
+                    where Users.user_id = ${req.query.user_id};`;
+
+  db.pool.query(getUsers, function (err, results, fields) {
+    res.send(JSON.stringify(results));
+  });
+});
+
 
 /* queries for posts */
 
@@ -108,7 +119,7 @@ app.get('/delete-post', (req, res) => {
   });
 });
 
-app.get('/update-post-group', (req, res) => {
+app.post('/update-post-group', (req, res) => {
 
   //updates which group a post was made in (or makes it public)
   const updatePostGroup = `
