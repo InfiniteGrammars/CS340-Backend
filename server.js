@@ -7,11 +7,6 @@ PORT = 2113;
 //connect to database
 const db = require('./database/db-connector');
 
-//main page
-app.get('/', (req, res) => {
-  res.send('Bird App Administration'); //placeholder
-});
-
 /* queries for users */
 app.get('/get-users', (req, res) => {
 
@@ -23,13 +18,32 @@ app.get('/get-users', (req, res) => {
   });
 });
 
+app.get('/delete-user', (req, res) => {
+
+  //deletes a given post based on user_id
+  const deleteUser = `
+    delete from Users
+    where user_id = ${req.query.user_id};`;
+
+  db.pool.query(deleteUser, (err, results, fields) => {
+    if (err) {
+      res.status(500).send(
+        `There was an error deleting user ${req.query.user_id}: ${err}`
+      );
+    } else {
+      res.send('User deleted.');
+    }
+  });
+});
+
+
 app.get('/get-user', (req, res) => {
 
   //sql query to get all groups in the database and return them
-  const getUsers = `select * from Users
+  const getUser = `select * from Users
                     where Users.user_id = ${req.query.user_id};`;
 
-  db.pool.query(getUsers, function (err, results, fields) {
+  db.pool.query(getUser, function (err, results, fields) {
     res.send(JSON.stringify(results));
   });
 });
@@ -104,11 +118,11 @@ app.post('/create-post', (req, res) => {
 app.get('/delete-post', (req, res) => {
 
   //deletes a given post based on post_id
-  const deletePost = `
+  const deleteUser = `
     delete from Posts
     where post_id = ${req.query.post_id};`;
 
-  db.pool.query(deletePost, (err, results, fields) => {
+  db.pool.query(deleteUser, (err, results, fields) => {
     if (err) {
       res.status(500).send(
         `There was an error deleting post ${req.query.post_id}: ${err}`
@@ -119,7 +133,7 @@ app.get('/delete-post', (req, res) => {
   });
 });
 
-app.post('/update-post-group', (req, res) => {
+app.get('/update-post-group', (req, res) => {
 
   //updates which group a post was made in (or makes it public)
   const updatePostGroup = `
