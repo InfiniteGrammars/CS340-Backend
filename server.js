@@ -18,6 +18,41 @@ app.get('/get-users', (req, res) => {
   });
 });
 
+// Get user by id
+app.get('/get-user', (req, res) => {
+
+  //sql query to get all groups in the database and return them
+  const getUser = `select * from Users
+                    where Users.user_id = ${req.query.user_id};`;
+
+  db.pool.query(getUser, function (err, results, fields) {
+    if (err) {
+      res.status(500).send(
+        `There was an error fetching user ${req.query.user_id}: ${err}`
+      );
+    } if (results.length === 0) {
+      res.status(404).send(`User ${req.query.user_id} not found`);
+    } else {
+      res.send(results[0]);
+    }
+  });
+});
+
+app.post('/create-user', (req, res) => {
+  const createUser = 'INSERT INTO Users (email, join_date, hashed_password, username, display_name, bio) VALUES (?, ?, ?, ?, ?, ?)';
+  data = [req.body.email, req.body.join_date, req.body.password, req.body.username, req.body.display_name, req.body.bio]
+
+  db.pool.query(createUser, data, (err, results, fields) => {
+    if (err) {
+      res.status(500).send(
+        `There was an error creating the post: ${err}`
+      );
+    } else {
+      res.status(200).send(JSON.stringify(results));
+    }
+  });
+})
+
 app.get('/delete-user', (req, res) => {
 
   //deletes a given post based on user_id
@@ -43,16 +78,6 @@ app.get('/delete-user', (req, res) => {
 });
 
 
-app.get('/get-user', (req, res) => {
-
-  //sql query to get all groups in the database and return them
-  const getUser = `select * from Users
-                    where Users.user_id = ${req.query.user_id};`;
-
-  db.pool.query(getUser, function (err, results, fields) {
-    res.send(JSON.stringify(results));
-  });
-});
 
 
 /* queries for posts */
@@ -169,6 +194,7 @@ app.get('/get-groups', (req, res) => {
     res.send(JSON.stringify(results));
   });
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server started. Listening on port ${PORT}...`)
