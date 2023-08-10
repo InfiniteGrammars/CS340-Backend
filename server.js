@@ -25,15 +25,21 @@ app.get('/delete-user', (req, res) => {
     delete from Users
     where user_id = ${req.query.user_id};`;
 
-  db.pool.query(deleteUser, (err, results, fields) => {
-    if (err) {
-      res.status(500).send(
-        `There was an error deleting user ${req.query.user_id}: ${err}`
-      );
-    } else {
-      res.send('User deleted.');
-    }
-  });
+  if (req.query.user_id == 1) {
+    res.status(422).send(
+      'Admin user cannot be deleted'
+    );
+  } else {
+    db.pool.query(deleteUser, (err, results, fields) => {
+      if (err) {
+        res.status(500).send(
+          `There was an error deleting user ${req.query.user_id}: ${err}`
+        );
+      } else {
+        res.send('User deleted.');
+      }
+    });
+  }
 });
 
 
@@ -135,7 +141,7 @@ app.get('/delete-post', (req, res) => {
 
 app.get('/update-post-group', (req, res) => {
 
-  //updates which group a post was made in (or makes it public)
+  //updates which group a post was made in
   const updatePostGroup = `
     update Posts
     set group_posted = ${req.query.group_id}
