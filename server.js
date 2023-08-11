@@ -39,7 +39,9 @@ app.get("/get-user", (req, res) => {
 
 app.post("/create-user", (req, res) => {
 	const createUser =
-		"INSERT INTO Users (email, join_date, hashed_password, username, display_name, bio) VALUES (?, ?, ?, ?, ?, ?)";
+		`INSERT INTO Users 
+        (email, join_date, hashed_password, username, display_name, bio) 
+        VALUES (?, ?, ?, ?, ?, ?)`;
 	data = [
 		req.body.email,
 		req.body.join_date,
@@ -51,7 +53,8 @@ app.post("/create-user", (req, res) => {
 
 	db.pool.query(createUser, data, (err, results, fields) => {
 		if (err) {
-			res.status(500).send(`There was an error creating the user: ${err}`);
+			res.status(500).send(`
+                There was an error creating the user: ${err}`);
 		} else {
 			res.status(200).send(JSON.stringify(results));
 		}
@@ -70,7 +73,8 @@ app.get("/delete-user", (req, res) => {
 		db.pool.query(deleteUser, (err, results, fields) => {
 			if (err) {
 				res.status(500).send(
-					`There was an error deleting user ${req.query.user_id}: ${err}`
+					`There was an error deleting user 
+                    ${req.query.user_id}: ${err}`
 				);
 			} else {
 				res.send("User deleted.");
@@ -100,7 +104,8 @@ app.get("/get-posts-by-user", (req, res) => {
 	db.pool.query(getPostsByUser, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`There was an error fetching posts for user ${req.query.user_id}: ${err}`
+				`There was an error fetching posts for user 
+                ${req.query.user_id}: ${err}`
 			);
 		} else {
 			res.status(200).send(JSON.stringify(results));
@@ -117,7 +122,8 @@ app.get("/get-posts-by-group", (req, res) => {
 	db.pool.query(getPostsByGroup, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`There was an error fetching posts for group ${req.query.group_id}: ${err}`
+				`There was an error fetching posts for group 
+                ${req.query.group_id}: ${err}`
 			);
 		} else {
 			res.status(200).send(JSON.stringify(results));
@@ -128,7 +134,9 @@ app.get("/get-posts-by-group", (req, res) => {
 app.post("/create-post", (req, res) => {
 	//allows creation of new post
 	const createPost =
-		"INSERT INTO Posts (user_id, post_body, time_posted, group_posted) VALUES (?, ?, ?, ?)";
+		`INSERT INTO Posts 
+        (user_id, post_body, time_posted, group_posted) 
+        VALUES (?, ?, ?, ?)`;
 	const data = [
 		req.body.user_id,
 		req.body.post_body,
@@ -138,7 +146,8 @@ app.post("/create-post", (req, res) => {
 
 	db.pool.query(createPost, data, (err, results, fields) => {
 		if (err) {
-			res.status(500).send(`There was an error creating the post: ${err}`);
+			res.status(500).send(`There was an error creating the post: ${err}`
+            );
 		} else {
 			res.status(200).send(JSON.stringify(results));
 		}
@@ -172,7 +181,8 @@ app.get("/update-post-group", (req, res) => {
 	db.pool.query(updatePostGroup, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`There was an error updating group for post ${req.query.post_id}: ${err}`
+				`There was an error updating group for post 
+                ${req.query.post_id}: ${err}`
 			);
 		} else {
 			res.status(200).send("Group updated.");
