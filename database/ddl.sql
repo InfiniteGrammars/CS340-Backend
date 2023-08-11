@@ -117,7 +117,7 @@ values
 '2023-02-05 09:30:00',
 '5e79ff9bd908ffbfd8b82c4218c7ae90a33d2f32e48b6996a86863e182c48794',
 'MarysBakes', 
-'🍞Mary\'s Artisan Bakery🧁',
+"🍞Mary's Artisan Bakery🧁",
 'Baking is my passion, sharing it is my joy.'),
 ('notdril@gmail.com', 
 '2023-03-07 07:45:00', 
