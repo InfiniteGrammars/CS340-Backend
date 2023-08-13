@@ -56,7 +56,7 @@ app.post("/create-user", (req, res) => {
 			res.status(500).send(`
                 There was an error creating the user: ${err}`);
 		} else {
-			res.status(200).send(JSON.stringify(results));
+			res.status(200).send("User created.");
 		}
 	});
 });
@@ -119,8 +119,7 @@ app.get("/get-posts-by-group", (req, res) => {
 	db.pool.query(getPostsByGroup, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`There was an error fetching posts for group 
-                ${req.query.group_id}: ${err}`
+				`There was an error fetching posts for group: ${err}`
 			);
 		} else {
 			res.status(200).send(JSON.stringify(results));
@@ -151,14 +150,12 @@ app.post("/create-post", (req, res) => {
 
 app.get("/delete-post", (req, res) => {
 	//deletes a given post based on post_id
-	const deleteUser = `delete from Posts
+	const deletePost = `delete from Posts
     where post_id = ${req.query.post_id};`;
 
-	db.pool.query(deleteUser, (err, results, fields) => {
+	db.pool.query(deletePost, (err, results, fields) => {
 		if (err) {
-			res.status(500).send(
-				`There was an error deleting post ${req.query.post_id}: ${err}`
-			);
+			res.status(500).send(`There was an error deleting post: ${err}`);
 		} else {
 			res.send("Post deleted.");
 		}
@@ -173,10 +170,7 @@ app.get("/update-post-group", (req, res) => {
 
 	db.pool.query(updatePostGroup, function (err, results, fields) {
 		if (err) {
-			res.status(500).send(
-				`There was an error updating group for post 
-                ${req.query.post_id}: ${err}`
-			);
+			res.status(500).send(`Error updating group for post: ${err}`);
 		} else {
 			res.status(200).send("Group updated.");
 		}
@@ -200,9 +194,7 @@ app.get("/delete-group", (req, res) => {
 
 	db.pool.query(deleteGroup, function (err, results, fields) {
 		if (err) {
-			res.status(500)().send(
-				`There was an error deleting group ${retq.query.group_id}: ${err}`
-			);
+			res.status(500)().send(`There was an error deleting group: ${err}`);
 		} else {
 			res.status(200).send(`Group deleted.`);
 		}
@@ -219,9 +211,9 @@ app.get("/get-members", (req, res) => {
 
 	db.pool.query(getMembers, function (err, results, fields) {
 		if (err) {
-			res.status(500).send(`
-        There was an error retriving members group ${req.query.group_id}: ${err}`);
-			s;
+			res.status(500).send(
+				`There was an error retriving members in group: ${err}`
+			);
 		} else {
 			res.send(JSON.stringify(results));
 		}
@@ -237,7 +229,7 @@ app.get("/add-to-group", (req, res) => {
 	db.pool.query(addToGroup, vals, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`There was an error adding user ${vals[0]} to group ${vals[1]}: ${err}`
+				`There was an error adding user to group: ${err}`
 			);
 		} else {
 			res.status(200).send("User added to group.");
@@ -254,7 +246,7 @@ app.get("/remove-from-group", (req, res) => {
 	db.pool.query(removeFromGroup, vals, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`There was an error removing user ${vals[1]} from group ${vals[0]}: ${err}`
+				`There was an error removing user from group: ${err}`
 			);
 		} else {
 			res.status(200).send("User removed from group.");
@@ -274,7 +266,7 @@ app.get("/show-messages-between", (req, res) => {
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`There was an error retrieving messages between users ${vals[0]} and ${vals[1]}: ${err}`
+				`Error retrieving messages between users ${vals[0]} and ${vals[1]}: ${err}`
 			);
 		} else {
 			res.send(JSON.stringify(results));
@@ -286,7 +278,6 @@ app.get("/show-messages-between", (req, res) => {
 
 app.get("/open-report", (req, res) => {
 	//opens a report on a given post
-	//linked both from reports page and posts page
 	const openReport = `insert into Reports (reported_post, notes)
 	values (? ?);`;
 	const vals = [req.body.post_id, req.body.notes];
@@ -294,9 +285,7 @@ app.get("/open-report", (req, res) => {
 
 	db.pool.query(openReport, vals, function (err, results, fields) {
 		if (err) {
-			res.status(500).send(
-				`Error opening report on post ${vals[0]}: ${err}`
-			);
+			res.status(500).send(`Error opening report on post: ${err}`);
 		} else {
 			res.status(200).send("Report opened.");
 		}
@@ -306,14 +295,13 @@ app.get("/open-report", (req, res) => {
 app.get("/update-report", (req, res) => {
 	//update notes on a given report
 	const updateReport = `Update Reports
-	set notes = ${req.body.notes}
+	set notes = ${req.body.notes} 
 	where report_id = ${req.query.report_id};`;
+	//feel free to change to query if not using form for these notes either
 
 	db.pool.query(updateReport, function (err, results, fields) {
 		if (err) {
-			res.status(500).send(
-				`Error updating notes on report ${req.query.report_id}: ${err}`
-			);
+			res.status(500).send(`Error updating notes on report: ${err}`);
 		} else {
 			res.status(200).send("Report updated.");
 		}
@@ -328,9 +316,7 @@ app.get("/mark-resolved", (req, res) => {
 
 	db.pool.query(markResolved, function (err, results, fields) {
 		if (err) {
-			res.status(500).send(
-				`Error resolving report ${req.query.report_id}: ${err}`
-			);
+			res.status(500).send(`Error resolving report: ${err}`);
 		} else {
 			res.status(200).send("Report resolved.");
 		}
@@ -344,9 +330,7 @@ app.get("/delete-report", (req, res) => {
 
 	db.pool.query(deleteReport, function (err, results, fields) {
 		if (err) {
-			res.status(500).send(
-				`Error deleting report ${req.query.report_id}: ${err}`
-			);
+			res.status(500).send(`Error deleting report: ${err}`);
 		} else {
 			res.status(200).send("Report deleted.");
 		}
