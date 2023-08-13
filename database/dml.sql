@@ -154,4 +154,5 @@ where sender_id = :user_id_Input or receiver_id = :user_id_Input;
 
 --select all messages between two given users 
 select * from Direct_Messages 
-where sender_id = :sender_id_Input and receiver_id = :receiver_id_Input;
+where sender_id = :sender_id_Input and receiver_id = :receiver_id_Input
+or (sender_id = :receiver_id_Input and receiver_id = :sender_id_Input);

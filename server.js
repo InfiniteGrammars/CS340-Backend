@@ -38,8 +38,7 @@ app.get("/get-user", (req, res) => {
 });
 
 app.post("/create-user", (req, res) => {
-	const createUser =
-		`INSERT INTO Users 
+	const createUser = `INSERT INTO Users 
         (email, join_date, hashed_password, username, display_name, bio) 
         VALUES (?, ?, ?, ?, ?, ?)`;
 	data = [
@@ -133,8 +132,7 @@ app.get("/get-posts-by-group", (req, res) => {
 
 app.post("/create-post", (req, res) => {
 	//allows creation of new post
-	const createPost =
-		`INSERT INTO Posts 
+	const createPost = `INSERT INTO Posts 
         (user_id, post_body, time_posted, group_posted) 
         VALUES (?, ?, ?, ?)`;
 	const data = [
@@ -146,8 +144,7 @@ app.post("/create-post", (req, res) => {
 
 	db.pool.query(createPost, data, (err, results, fields) => {
 		if (err) {
-			res.status(500).send(`There was an error creating the post: ${err}`
-            );
+			res.status(500).send(`There was an error creating the post: ${err}`);
 		} else {
 			res.status(200).send(JSON.stringify(results));
 		}
@@ -197,6 +194,60 @@ app.get("/get-groups", (req, res) => {
 
 	db.pool.query(getGroups, function (err, results, fields) {
 		res.send(JSON.stringify(results));
+	});
+});
+
+app.get("/delete-group", (req, res) => {
+	//deletes a given group
+	const deleteGroup = `
+    delete from Group 
+    where group_id = ${req.query.group_id}`;
+
+	db.pool.query(deleteGroup, function (err, results, fields) {
+		if (err) {
+			res.status(500)().send(
+				`There was an error deleting group ${retq.query.group_id}: ${err}`
+			);
+		} else {
+			res.status(200).send(`Group deleted.`);
+		}
+	});
+});
+
+app.get("/get-members", (req, res) => {
+	//sql query to get all members that are part of a given group
+	//returns username and user_id number for clarity
+	const getMembers = `
+      select username, user_id from Users
+      inner join Group_Members by user_id 
+      where group_id = ${req.query.group_id}`;
+
+	db.pool.query(getMembers, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(`
+        There was an error retriving members group ${req.query.group_id}: ${err}`);
+			s;
+		} else {
+			res.send(JSON.stringify(results));
+		}
+	});
+});
+
+app.get("/add-to-group", (req, res) => {
+	//adds a user to a given group
+	const addToGroup = `
+  insert into Group_Members (group_id, member_id)
+  values (? ?)`;
+	vals = [req.query.group_id, req.query.member_id];
+
+	db.pool.query(addToGroup, vals, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`There was an error adding user ${vals[0]} to group ${vals[1]}: ${err}`
+			);
+		} else {
+			res.status(200).send("User added to group.");
+		}
 	});
 });
 
