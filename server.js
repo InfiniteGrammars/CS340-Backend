@@ -8,6 +8,7 @@ PORT = 2113;
 const db = require("./database/db-connector");
 
 /* queries for users */
+
 app.get("/get-users", (req, res) => {
 	//sql query to get all users in the database and return them
 	const getUsers = "select * from Users;";
@@ -40,7 +41,7 @@ app.get("/get-user", (req, res) => {
 app.post("/create-user", (req, res) => {
 	const createUser = `INSERT INTO Users 
         (email, join_date, hashed_password, username, display_name, bio) 
-        VALUES (?, ?, ?, ?, ?, ?)`;
+        VALUES (?, ?, ?, ?, ?, ?);`;
 	data = [
 		req.body.email,
 		req.body.join_date,
@@ -62,8 +63,7 @@ app.post("/create-user", (req, res) => {
 
 app.get("/delete-user", (req, res) => {
 	//deletes a given user based on user_id
-	const deleteUser = `
-    delete from Users
+	const deleteUser = `delete from Users
     where user_id = ${req.query.user_id};`;
 
 	if (req.query.user_id == 1) {
@@ -95,8 +95,7 @@ app.get("/get-posts", (req, res) => {
 
 app.get("/get-posts-by-user", (req, res) => {
 	//returns posts by a specific user
-	const getPostsByUser = `
-    select * from Posts
+	const getPostsByUser = `select * from Posts
     inner join Users on Posts.user_id = Users.user_id
     where Users.user_id = ${req.query.user_id};`;
 
@@ -114,8 +113,7 @@ app.get("/get-posts-by-user", (req, res) => {
 
 app.get("/get-posts-by-group", (req, res) => {
 	//show all posts in a given group
-	const getPostsByGroup = `
-    select * from Posts
+	const getPostsByGroup = `select * from Posts
     where group_posted = ${req.query.group_id};`;
 
 	db.pool.query(getPostsByGroup, function (err, results, fields) {
@@ -134,7 +132,7 @@ app.post("/create-post", (req, res) => {
 	//allows creation of new post
 	const createPost = `INSERT INTO Posts 
         (user_id, post_body, time_posted, group_posted) 
-        VALUES (?, ?, ?, ?)`;
+        VALUES (?, ?, ?, ?);`;
 	const data = [
 		req.body.user_id,
 		req.body.post_body,
@@ -153,8 +151,7 @@ app.post("/create-post", (req, res) => {
 
 app.get("/delete-post", (req, res) => {
 	//deletes a given post based on post_id
-	const deleteUser = `
-    delete from Posts
+	const deleteUser = `delete from Posts
     where post_id = ${req.query.post_id};`;
 
 	db.pool.query(deleteUser, (err, results, fields) => {
@@ -170,8 +167,7 @@ app.get("/delete-post", (req, res) => {
 
 app.get("/update-post-group", (req, res) => {
 	//updates which group a post was made in
-	const updatePostGroup = `
-    update Posts
+	const updatePostGroup = `update Posts
     set group_posted = ${req.query.group_id}
     where post_id = ${req.query.post_id};`;
 
@@ -199,9 +195,8 @@ app.get("/get-groups", (req, res) => {
 
 app.get("/delete-group", (req, res) => {
 	//deletes a given group
-	const deleteGroup = `
-    delete from Group 
-    where group_id = ${req.query.group_id}`;
+	const deleteGroup = `delete from Groups 
+    where group_id = ${req.query.group_id};`;
 
 	db.pool.query(deleteGroup, function (err, results, fields) {
 		if (err) {
@@ -220,7 +215,7 @@ app.get("/get-members", (req, res) => {
 	const getMembers = `
       select username, user_id from Users
       inner join Group_Members by user_id 
-      where group_id = ${req.query.group_id}`;
+      where group_id = ${req.query.group_id};`;
 
 	db.pool.query(getMembers, function (err, results, fields) {
 		if (err) {
@@ -235,10 +230,9 @@ app.get("/get-members", (req, res) => {
 
 app.get("/add-to-group", (req, res) => {
 	//adds a user to a given group
-	const addToGroup = `
-  insert into Group_Members (group_id, member_id)
-  values (? ?)`;
-	vals = [req.query.group_id, req.query.member_id];
+	const addToGroup = `insert into Group_Members (group_id, member_id)
+	values (? ?);`;
+	const vals = [req.query.group_id, req.query.member_id];
 
 	db.pool.query(addToGroup, vals, function (err, results, fields) {
 		if (err) {
@@ -247,6 +241,114 @@ app.get("/add-to-group", (req, res) => {
 			);
 		} else {
 			res.status(200).send("User added to group.");
+		}
+	});
+});
+
+app.get("/remove-from-group", (req, res) => {
+	//removes a user from a given group
+	const removeFromGroup = `delete from Group_Members
+		where group_id = ? and user_id = ?;`;
+	const vals = [req.query.group_id, req.query.user_id];
+
+	db.pool.query(removeFromGroup, vals, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`There was an error removing user ${vals[1]} from group ${vals[0]}: ${err}`
+			);
+		} else {
+			res.status(200).send("User removed from group.");
+		}
+	});
+});
+
+/* queries for direct messages */
+
+app.get("/show-messages-between", (req, res) => {
+	//shows all messages between user1 and user2 (as chosen by client)
+	const vals = [req.query.user_id1, req.query.user_id2];
+	const getMessages = `select * from Direct_Messages
+	where (sender_id = ${vals[0]} and receiver_id = ${vals[1]})
+	or (sender_id = ${vals[1]} and receiver_id = ${vals[0]});`;
+
+	db.pool.query(getMessages, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`There was an error retrieving messages between users ${vals[0]} and ${vals[1]}: ${err}`
+			);
+		} else {
+			res.send(JSON.stringify(results));
+		}
+	});
+});
+
+/* queries for reports */
+
+app.get("/open-report", (req, res) => {
+	//opens a report on a given post
+	//linked both from reports page and posts page
+	const openReport = `insert into Reports (reported_post, notes)
+	values (? ?);`;
+	const vals = [req.body.post_id, req.body.notes];
+	//feel free to change to query if not using a form for this
+
+	db.pool.query(openReport, vals, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`Error opening report on post ${vals[0]}: ${err}`
+			);
+		} else {
+			res.status(200).send("Report opened.");
+		}
+	});
+});
+
+app.get("/update-report", (req, res) => {
+	//update notes on a given report
+	const updateReport = `Update Reports
+	set notes = ${req.body.notes}
+	where report_id = ${req.query.report_id};`;
+
+	db.pool.query(updateReport, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`Error updating notes on report ${req.query.report_id}: ${err}`
+			);
+		} else {
+			res.status(200).send("Report updated.");
+		}
+	});
+});
+
+app.get("/mark-resolved", (req, res) => {
+	//mark a report as resolved, aka set Reports.status to 1
+	const markResolved = `update Reports
+	set status = 1
+	where report_id = ${req.query.report_id};`;
+
+	db.pool.query(markResolved, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`Error resolving report ${req.query.report_id}: ${err}`
+			);
+		} else {
+			res.status(200).send("Report resolved.");
+		}
+	});
+});
+
+app.get("/delete-report", (req, res) => {
+	//delete a report given report_id
+	const deleteReport = `delete from Reports
+	where report_id = ${req.query.report_id};`;
+
+	db.pool.query(deleteReport, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`Error deleting report ${req.query.report_id}: ${err}`
+			);
+		} else {
+			res.status(200).send("Report deleted.");
 		}
 	});
 });
