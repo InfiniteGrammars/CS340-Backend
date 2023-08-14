@@ -216,10 +216,7 @@ app.post("/add-group", (req, res) => {
 	const createGroup = `INSERT INTO Groups
         (group_name, creator_id)
         VALUES (?, ?);`;
-	data = [
-		req.body.group_name,
-		req.body.creator,
-	];
+	data = [req.body.group_name, req.body.creator];
 
 	db.pool.query(createGroup, data, (err, results, fields) => {
 		if (err) {
@@ -333,6 +330,25 @@ app.get("/show-messages-between", (req, res) => {
 	});
 });
 
+app.get("/send-message", (req, res) => {
+	const sendMessage = `insert into Direct_Messages (sender_id, receiver_id, message_content)
+	values (?, ?, ?);`;
+	const vals = [
+		req.query.sender_id,
+		req.query.receiver_id,
+		req.query.message_content,
+	];
+
+	db.pool.query(sendMessage, vals, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`There was an error sending your message: ${err}`
+			);
+		} else {
+			res.status(200).send("Message sent.");
+		}
+	});
+});
 /* queries for reports */
 
 app.get("/get-reports", (req, res) => {
