@@ -342,7 +342,30 @@ app.get("/get-messages-from", (req, res) => {
 	});
 });
 
-app.get("/show-messages-between", (req, res) => {
+app.get("/get-messages-to", (req, res) => {
+	//get all dms sent from a specific user (including usernames)
+	const getMessages = `select Direct_Messages.message_id,
+	Direct_Messages.sender_id,
+	Direct_Messages.receiver_id,
+	DATE_FORMAT(Direct_Messages.time_sent, '%b %e, %Y %l:%i%p') AS time_sent,
+	Direct_Messages.message_content,
+	senders.username as sender_username,
+	receivers.username as receiver_username
+	from Direct_Messages
+	inner join Users senders on Direct_Messages.sender_id = senders.user_id
+	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
+	where Direct_Messages.receiver_id = ${req.query.receiver_id};`;
+
+	db.pool.query(getMessages, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(`Error retrieving messages sent to user: ${err}`);
+		} else {
+			res.status(200).send(JSON.stringify(results));
+		}
+	});
+});
+
+app.get("/get-messages-between", (req, res) => {
 	//shows all messages between user1 and user2 (as chosen by client)
 	const vals = [req.query.user_id1, req.query.user_id2];
 	const getMessages = `select Direct_Messages.message_id,
