@@ -206,7 +206,7 @@ app.get("/get-members", (req, res) => {
 	//returns username and user_id number for clarity
 	const getMembers = `
       select username, user_id from Users
-      inner join Group_Members by user_id 
+      inner join Group_Members on Users.user_id = Group_Members.member_id 
       where group_id = ${req.query.group_id};`;
 
 	db.pool.query(getMembers, function (err, results, fields) {
