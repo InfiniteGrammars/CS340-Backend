@@ -390,13 +390,10 @@ app.post("/open-report", (req, res) => {
 		"Administration report."
 	);`;
 
-	//feel free to change to query if not using a form for this
-
 	db.pool.query(openReport, vals, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(`Error opening report on post: ${err}`);
 		} else {
-			res.status(200).send("Report opened.");
 			//also create a user report from admin
 			db.pool.query(createUserReport, function (err, results, fields) {
 				if (err) {
