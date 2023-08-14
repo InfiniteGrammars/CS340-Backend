@@ -376,16 +376,16 @@ app.get("/get-user-reports-by-report", (req, res) => {
 	});
 });
 
-app.get("/open-report", (req, res) => {
+app.post("/open-report", (req, res) => {
 	//opens a report on a given post
 	const openReport = `insert into Reports (reported_post, notes)
-	values (? ?);`;
+	values (?, ?);`;
 	const vals = [req.body.post_id, req.body.notes];
 
 	//create user report by admin
 	const createUserReport = `insert into User_Reports (report_id, reporting_user, report_reason)
 	values (
-		(select report_id from Reports where reported_post = ${req.body.post_id}), 
+		(select report_id from Reports where reported_post = ${req.body.post_id}),
 		1,
 		"Administration report."
 	);`;
