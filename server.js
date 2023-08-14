@@ -39,8 +39,8 @@ app.get("/get-user", (req, res) => {
 });
 
 app.post("/create-user", (req, res) => {
-	const createUser = `INSERT INTO Users 
-        (email, join_date, hashed_password, username, display_name, bio) 
+	const createUser = `INSERT INTO Users
+        (email, join_date, hashed_password, username, display_name, bio)
         VALUES (?, ?, ?, ?, ?, ?);`;
 	data = [
 		req.body.email,
@@ -72,7 +72,7 @@ app.get("/delete-user", (req, res) => {
 		db.pool.query(deleteUser, (err, results, fields) => {
 			if (err) {
 				res.status(500).send(
-					`There was an error deleting user 
+					`There was an error deleting user
                     ${req.query.user_id}: ${err}`
 				);
 			} else {
@@ -86,10 +86,34 @@ app.get("/delete-user", (req, res) => {
 
 app.get("/get-posts", (req, res) => {
 	//sql query to get all posts in the database and return them
-	const getPosts = "select * from Posts;";
+	const getPosts = `select *,
+	DATE_FORMAT(time_posted, '%b %e, %Y %l:%i%p') AS time_posted
+	from Posts;`;
 
 	db.pool.query(getPosts, function (err, results, fields) {
 		res.send(JSON.stringify(results));
+	});
+});
+
+// Get single post by id
+app.get("/get-post-by-id", (req, res) => {
+	//sql query to a selected post in the database
+	const getPosts = `select *,
+	DATE_FORMAT(time_posted, '%b %e, %Y %l:%i%p') AS time_posted
+	from Posts
+	where post_id = ${req.query.post_id};`;
+
+	db.pool.query(getPosts, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`There was an error fetching post
+                ${req.query.post_id}: ${err}`
+			);
+		} else if (results.length == 0) {
+			res.status(404).send(`Post not found`);
+		} else {
+			res.status(200).send(JSON.stringify(results));
+		}
 	});
 });
 
@@ -102,7 +126,7 @@ app.get("/get-posts-by-user", (req, res) => {
 	db.pool.query(getPostsByUser, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`There was an error fetching posts for user 
+				`There was an error fetching posts for user
                 ${req.query.user_id}: ${err}`
 			);
 		} else {
@@ -129,8 +153,8 @@ app.get("/get-posts-by-group", (req, res) => {
 
 app.post("/create-post", (req, res) => {
 	//allows creation of new post
-	const createPost = `INSERT INTO Posts 
-        (user_id, post_body, time_posted, group_posted) 
+	const createPost = `INSERT INTO Posts
+        (user_id, post_body, time_posted, group_posted)
         VALUES (?, ?, ?, ?);`;
 	const data = [
 		req.body.user_id,
@@ -141,7 +165,8 @@ app.post("/create-post", (req, res) => {
 
 	db.pool.query(createPost, data, (err, results, fields) => {
 		if (err) {
-			res.status(500).send(`There was an error creating the post: ${err}`);
+			res.status(500).send(`
+                There was an error creating the post: ${err}`);
 		} else {
 			res.status(200).send(JSON.stringify(results));
 		}
@@ -189,7 +214,7 @@ app.get("/get-groups", (req, res) => {
 
 app.get("/delete-group", (req, res) => {
 	//deletes a given group
-	const deleteGroup = `delete from Groups 
+	const deleteGroup = `delete from Groups
     where group_id = ${req.query.group_id};`;
 
 	db.pool.query(deleteGroup, function (err, results, fields) {
@@ -256,6 +281,20 @@ app.get("/remove-from-group", (req, res) => {
 
 /* queries for direct messages */
 
+app.get("/get-messages", (req, res) => {
+	const getMessages = `select *,
+	DATE_FORMAT(time_sent, '%b %e, %Y %l:%i%p') AS time_sent
+	from Direct_Messages`;
+
+	db.pool.query(getMessages, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(`Error retrieving messages`);
+		} else {
+			res.status(200).send(JSON.stringify(results));
+		}
+	});
+});
+
 app.get("/show-messages-between", (req, res) => {
 	//shows all messages between user1 and user2 (as chosen by client)
 	const vals = [req.query.user_id1, req.query.user_id2];
@@ -266,7 +305,8 @@ app.get("/show-messages-between", (req, res) => {
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(
-				`Error retrieving messages between users ${vals[0]} and ${vals[1]}: ${err}`
+				`Error retrieving messages between users
+                ${vals[0]} and ${vals[1]}: ${err}`
 			);
 		} else {
 			res.send(JSON.stringify(results));
@@ -275,6 +315,31 @@ app.get("/show-messages-between", (req, res) => {
 });
 
 /* queries for reports */
+
+app.get("/get-reports", (req, res) => {
+	const getReports = `select * from Reports`;
+
+	db.pool.query(getReports, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(`Error fetching reports: ${err}`);
+		} else {
+			res.status(200).send(JSON.stringify(results));
+		}
+	});
+});
+
+app.get("/get-user-reports-by-report", (req, res) => {
+	const getUserReports = `select * from User_Reports
+	where report_id = ${req.query.report_id}`;
+
+	db.pool.query(getUserReports, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(`Error fetching user reports: ${err}`);
+		} else {
+			res.status(200).send(JSON.stringify(results));
+		}
+	});
+});
 
 app.get("/open-report", (req, res) => {
 	//opens a report on a given post
@@ -292,12 +357,11 @@ app.get("/open-report", (req, res) => {
 	});
 });
 
-app.get("/update-report", (req, res) => {
+app.post("/update-report", (req, res) => {
 	//update notes on a given report
 	const updateReport = `Update Reports
-	set notes = ${req.body.notes} 
-	where report_id = ${req.query.report_id};`;
-	//feel free to change to query if not using form for these notes either
+	set notes = "${req.body.notes}"
+	where report_id = ${req.body.report_id};`;
 
 	db.pool.query(updateReport, function (err, results, fields) {
 		if (err) {
@@ -308,17 +372,17 @@ app.get("/update-report", (req, res) => {
 	});
 });
 
-app.get("/mark-resolved", (req, res) => {
+app.get("/update-report-status", (req, res) => {
 	//mark a report as resolved, aka set Reports.status to 1
-	const markResolved = `update Reports
-	set status = 1
+	const setStatus = `update Reports
+	set status = ${req.query.status}
 	where report_id = ${req.query.report_id};`;
 
-	db.pool.query(markResolved, function (err, results, fields) {
+	db.pool.query(setStatus, function (err, results, fields) {
 		if (err) {
-			res.status(500).send(`Error resolving report: ${err}`);
+			res.status(500).send(`Error updating status for report: ${err}`);
 		} else {
-			res.status(200).send("Report resolved.");
+			res.status(200).send("Report status switched.");
 		}
 	});
 });
