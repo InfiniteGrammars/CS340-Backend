@@ -298,13 +298,44 @@ app.get("/remove-from-group", (req, res) => {
 /* queries for direct messages */
 
 app.get("/get-messages", (req, res) => {
-	const getMessages = `select *,
-	DATE_FORMAT(time_sent, '%b %e, %Y %l:%i%p') AS time_sent
-	from Direct_Messages`;
+	//get all dms (including the sender/receiver usernames)
+	const getMessages = `select Direct_Messages.message_id,
+	Direct_Messages.sender_id,
+	Direct_Messages.receiver_id,
+	DATE_FORMAT(Direct_Messages.time_sent, '%b %e, %Y %l:%i%p') AS time_sent,
+	Direct_Messages.message_content,
+	senders.username as sender_username,
+	receivers.username as receiver_username
+	from Direct_Messages
+	inner join Users senders on Direct_Messages.sender_id = senders.user_id
+	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
 			res.status(500).send(`Error retrieving messages`);
+		} else {
+			res.status(200).send(JSON.stringify(results));
+		}
+	});
+});
+
+app.get("/get-messages-from", (req, res) => {
+	//get all dms sent from a specific user (including usernames)
+	const getMessages = `select Direct_Messages.message_id,
+	Direct_Messages.sender_id,
+	Direct_Messages.receiver_id,
+	DATE_FORMAT(Direct_Messages.time_sent, '%b %e, %Y %l:%i%p') AS time_sent,
+	Direct_Messages.message_content,
+	senders.username as sender_username,
+	receivers.username as receiver_username
+	from Direct_Messages
+	inner join Users senders on Direct_Messages.sender_id = senders.user_id
+	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
+	where Direct_Messages.sender_id = ${req.query.sender_id};`;
+
+	db.pool.query(getMessages, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(`Error retrieving messages from user: ${err}`);
 		} else {
 			res.status(200).send(JSON.stringify(results));
 		}
