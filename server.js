@@ -308,7 +308,8 @@ app.get("/get-messages", (req, res) => {
 	receivers.username as receiver_username
 	from Direct_Messages
 	inner join Users senders on Direct_Messages.sender_id = senders.user_id
-	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id;`;
+	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
+	order by time_sent asc;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
@@ -331,7 +332,8 @@ app.get("/get-messages-from", (req, res) => {
 	from Direct_Messages
 	inner join Users senders on Direct_Messages.sender_id = senders.user_id
 	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
-	where Direct_Messages.sender_id = ${req.query.sender_id};`;
+	where Direct_Messages.sender_id = ${req.query.sender_id}
+	order by time_sent asc;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
@@ -354,7 +356,8 @@ app.get("/get-messages-to", (req, res) => {
 	from Direct_Messages
 	inner join Users senders on Direct_Messages.sender_id = senders.user_id
 	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
-	where Direct_Messages.receiver_id = ${req.query.receiver_id};`;
+	where Direct_Messages.receiver_id = ${req.query.receiver_id}
+	order by time_sent asc;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
@@ -379,7 +382,8 @@ app.get("/get-messages-between", (req, res) => {
 	inner join Users senders on Direct_Messages.sender_id = senders.user_id
 	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
 	where (sender_id = ${vals[0]} and receiver_id = ${vals[1]})
-	or (sender_id = ${vals[1]} and receiver_id = ${vals[0]});`;
+	or (sender_id = ${vals[1]} and receiver_id = ${vals[0]})
+	order by time_sent asc;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
