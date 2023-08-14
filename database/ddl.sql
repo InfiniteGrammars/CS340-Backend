@@ -87,17 +87,6 @@ create table `User_Reports` (
     foreign key (reporting_user) references Users(user_id)
 );
 
-drop table if exists `Follows`;
-create table `Follows` ( 
-	user_id int, 
-    follower_id int,
-    time_followed datetime default now(), 
-    primary key (user_id, follower_id),
-    foreign key (user_id) references Users(user_id) on delete cascade,
-    foreign key (follower_id) references Users(user_id) on delete cascade
-);
-
-
 
 /*insert in sample data*/
 
@@ -220,7 +209,7 @@ values
 
 
 insert into Reports(reported_post, status, notes) 
-values (4, "not evaluated", null); 
+values (4, 0, "Post has been reported by multiple users as an example of doxxing a user. To be followed up on."); 
 
 insert into User_Reports(report_id, reporting_user, time_reported, report_reason) 
 values (1, 6, "2023-04-02 09:00:00", 
@@ -229,21 +218,6 @@ values (1, 6, "2023-04-02 09:00:00",
 "User is inciting violence."), 
 (1, 4, "2023-04-02 11:00:00", 
 "Potential doxxing attempt.");
-
-
-insert into Follows (user_id, follower_id, time_followed) 
-values (1, 2, '2023-01-21 10:00:00'),
-(2, 4, '2023-01-23 09:00:00'), 
-(2, 5, '2023-01-25 14:00:00'),
-(2, 6, '2023-01-27 11:00:00'),
-(3, 2, '2023-02-01 09:00:00'), 
-(4, 2, '2023-02-05 14:00:00'),
-(6, 4, '2023-02-15 13:00:00'),
-(3, 5, '2023-03-02 10:00:00'),
-(4, 6, '2023-03-10 12:00:00'),
-(5, 2, '2023-03-20 15:00:00'),
-(6, 3, '2023-03-25 16:00:00'), 
-(5, 4, '2023-04-05 09:00:00');
 
 insert into Group_Members (group_id, member_id, time_joined) 
 values (1, 1, '2023-02-01 15:00:00'),

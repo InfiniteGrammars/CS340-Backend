@@ -381,6 +381,15 @@ app.get("/open-report", (req, res) => {
 	const openReport = `insert into Reports (reported_post, notes)
 	values (? ?);`;
 	const vals = [req.body.post_id, req.body.notes];
+
+	//create user report by admin
+	const createUserReport = `insert into User_Reports (report_id, reporting_user, report_reason)
+	values (
+		(select report_id from Reports where reported_post = ${req.body.post_id}), 
+		1,
+		"Administration report."
+	);`;
+
 	//feel free to change to query if not using a form for this
 
 	db.pool.query(openReport, vals, function (err, results, fields) {
@@ -388,6 +397,16 @@ app.get("/open-report", (req, res) => {
 			res.status(500).send(`Error opening report on post: ${err}`);
 		} else {
 			res.status(200).send("Report opened.");
+			//also create a user report from admin
+			db.pool.query(createUserReport, function (err, results, fields) {
+				if (err) {
+					res.status(500).send(
+						`Error adding user report from admin: ${err}`
+					);
+				} else {
+					res.status(200).send("Admin user report created.");
+				}
+			});
 		}
 	});
 });
