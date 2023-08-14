@@ -345,7 +345,16 @@ app.get("/get-messages-from", (req, res) => {
 app.get("/show-messages-between", (req, res) => {
 	//shows all messages between user1 and user2 (as chosen by client)
 	const vals = [req.query.user_id1, req.query.user_id2];
-	const getMessages = `select * from Direct_Messages
+	const getMessages = `select Direct_Messages.message_id,
+	Direct_Messages.sender_id,
+	Direct_Messages.receiver_id,
+	DATE_FORMAT(Direct_Messages.time_sent, '%b %e, %Y %l:%i%p') AS time_sent,
+	Direct_Messages.message_content,
+	senders.username as sender_username,
+	receivers.username as receiver_username
+	from Direct_Messages
+	inner join Users senders on Direct_Messages.sender_id = senders.user_id
+	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
 	where (sender_id = ${vals[0]} and receiver_id = ${vals[1]})
 	or (sender_id = ${vals[1]} and receiver_id = ${vals[0]});`;
 
