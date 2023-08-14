@@ -117,7 +117,7 @@ values
 '2023-02-05 09:30:00',
 '5e79ff9bd908ffbfd8b82c4218c7ae90a33d2f32e48b6996a86863e182c48794',
 'MarysBakes', 
-"🍞Mary's Artisan Bakery🧁",
+"Mary's Artisan Bakery",
 'Baking is my passion, sharing it is my joy.'),
 ('notdril@gmail.com', 
 '2023-03-07 07:45:00', 
@@ -129,13 +129,13 @@ values
 '2023-03-31 20:20:00', 
 '2d8b6020a65da07fa8b2b9b0533f079784d47b3f58e7d76a6e4d6b414a2eeb77',
 'Liam0',
-"Liam 🎮 eSports",
+"Liam (eSports)",
 'Professional gamer. Fortnite champion. Esports is life.'),
 ('techenthusiast@gurureviews.com', 
 '2023-06-10 15:30:00', 
 '3d1f3ef76fbc1ec5a3c61831556a26d37b1c8a26d8f1f83b8b0a1d85fa72b709',
 'TechyZone', 
-"Evan 👨‍💻 Tech Guru", 
+"Evan the Tech Guru", 
 'Demystifying tech, one gadget at a time. Videos every Wednesday.');
 
 insert into `Groups` (group_name, creator_id, time_created) 
@@ -146,7 +146,7 @@ values ("Margot's Fans", 2, '2023-02-01 15:00:00'),
 insert into Posts (user_id, post_body, time_posted, group_posted) 
 values 
 (2,
-"Exciting news coming soon! 🎬 Stay Tuned!",
+"Exciting news coming soon! Stay Tuned!",
 '2023-01-20 14:00:00',
 null),
 (3, 
@@ -171,7 +171,7 @@ null),
 '2023-06-15 16:00:00',
 null), 
 (2, 
-"Thanks for all the love and support. You guys are the best! 💕",
+"Thanks for all the love and support. You guys are the best! <3",
 '2023-02-05 18:00:00',
 1),
 (3, 
@@ -183,11 +183,11 @@ null),
 '2023-03-25 14:30:00',
 null),
 (5, 
-"Practice makes perfect. Keep grinding! 💪 #Esports",
+"Practice makes perfect. Keep grinding! #Esports",
 '2023-04-05 21:30:00',
 3),
 (6, 
-"Apple or Android? What's your preference? (There is a right answer 🍎) #TechDebate",
+"Apple or Android? What's your preference? (There is a right answer - think fruits) #TechDebate",
 '2023-06-25 17:00:00',
 3);
 
@@ -216,7 +216,7 @@ values
 (5, 3, '2023-02-14 17:00:00',
 "Any baking tips for a beginner?"),
 (3, 5, '2023-02-15 14:30:00',
-"Sure, start with simple recipes! I recommend cookies for an absolute beginner, and then no-knead bread if you're ready for something more challenging. Check out my blog for recipes ❤️");
+"Sure, start with simple recipes! I recommend cookies for an absolute beginner, and then no-knead bread if you're ready for something more challenging. Check out my blog for recipes <3");
 
 
 insert into Reports(reported_post, status, notes) 
