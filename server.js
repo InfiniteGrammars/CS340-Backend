@@ -309,7 +309,7 @@ app.get("/get-messages", (req, res) => {
 	from Direct_Messages
 	inner join Users senders on Direct_Messages.sender_id = senders.user_id
 	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
-	order by time_sent asc;`;
+	order by time_sent desc;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
@@ -333,7 +333,7 @@ app.get("/get-messages-from", (req, res) => {
 	inner join Users senders on Direct_Messages.sender_id = senders.user_id
 	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
 	where Direct_Messages.sender_id = ${req.query.sender_id}
-	order by time_sent asc;`;
+	order by time_sent desc;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
@@ -357,7 +357,7 @@ app.get("/get-messages-to", (req, res) => {
 	inner join Users senders on Direct_Messages.sender_id = senders.user_id
 	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
 	where Direct_Messages.receiver_id = ${req.query.receiver_id}
-	order by time_sent asc;`;
+	order by time_sent desc;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
@@ -383,7 +383,7 @@ app.get("/get-messages-between", (req, res) => {
 	inner join Users receivers on Direct_Messages.receiver_id = receivers.user_id
 	where (sender_id = ${vals[0]} and receiver_id = ${vals[1]})
 	or (sender_id = ${vals[1]} and receiver_id = ${vals[0]})
-	order by time_sent asc;`;
+	order by time_sent desc;`;
 
 	db.pool.query(getMessages, function (err, results, fields) {
 		if (err) {
@@ -397,13 +397,13 @@ app.get("/get-messages-between", (req, res) => {
 	});
 });
 
-app.get("/send-message", (req, res) => {
+app.post("/send-message", (req, res) => {
 	const sendMessage = `insert into Direct_Messages (sender_id, receiver_id, message_content)
 	values (?, ?, ?);`;
 	const vals = [
-		req.query.sender_id,
-		req.query.receiver_id,
-		req.query.message_content,
+		req.body.sender_id,
+		req.body.receiver_id,
+		req.body.message_content,
 	];
 
 	db.pool.query(sendMessage, vals, function (err, results, fields) {
@@ -416,6 +416,7 @@ app.get("/send-message", (req, res) => {
 		}
 	});
 });
+
 /* queries for reports */
 
 app.get("/get-reports", (req, res) => {
