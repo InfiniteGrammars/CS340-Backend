@@ -162,7 +162,6 @@ app.post("/create-post", (req, res) => {
 		req.body.time_posted,
 		req.body.group_posted,
 	];
-
 	db.pool.query(createPost, data, (err, results, fields) => {
 		if (err) {
 			res.status(500).send(`
@@ -212,6 +211,26 @@ app.get("/get-groups", (req, res) => {
 	});
 });
 
+app.post("/add-group", (req, res) => {
+	//creates a group
+	const createGroup = `INSERT INTO Groups
+        (group_name, creator_id)
+        VALUES (?, ?);`;
+	data = [
+		req.body.group_name,
+		req.body.creator,
+	];
+
+	db.pool.query(createGroup, data, (err, results, fields) => {
+		if (err) {
+			res.status(500).send(`
+                There was an error creating the group: ${err}`);
+		} else {
+			res.status(200).send("Group created.");
+		}
+	});
+});
+
 app.get("/delete-group", (req, res) => {
 	//deletes a given group
 	const deleteGroup = `delete from Groups
@@ -231,7 +250,7 @@ app.get("/get-members", (req, res) => {
 	//returns username and user_id number for clarity
 	const getMembers = `
       select username, user_id from Users
-      inner join Group_Members on Users.user_id = Group_Members.member_id 
+      inner join Group_Members on Users.user_id = Group_Members.member_id
       where group_id = ${req.query.group_id};`;
 
 	db.pool.query(getMembers, function (err, results, fields) {
@@ -248,7 +267,7 @@ app.get("/get-members", (req, res) => {
 app.get("/add-to-group", (req, res) => {
 	//adds a user to a given group
 	const addToGroup = `insert into Group_Members (group_id, member_id)
-	values (? ?);`;
+	values (?, ?);`;
 	const vals = [req.query.group_id, req.query.member_id];
 
 	db.pool.query(addToGroup, vals, function (err, results, fields) {
