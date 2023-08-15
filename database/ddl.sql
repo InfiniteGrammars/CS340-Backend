@@ -17,7 +17,6 @@ create table `Users` (
     username varchar(32) unique not null, 
     display_name varchar(64), 
     bio varchar(128),
-    profile_pic blob,
     primary key (user_id)
 ); --allows for storing emojis
 
