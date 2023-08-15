@@ -18,7 +18,7 @@ create table `Users` (
     display_name varchar(64), 
     bio varchar(128),
     primary key (user_id)
-); --allows for storing emojis
+); 
 
 drop table if exists `Groups`;
 create table `Groups` ( 
