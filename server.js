@@ -134,22 +134,6 @@ app.get("/get-posts-by-user", (req, res) => {
 	});
 });
 
-app.get("/get-posts-by-group", (req, res) => {
-	//show all posts in a given group
-	const getPostsByGroup = `select * from Posts
-    where group_posted = ${req.query.group_id};`;
-
-	db.pool.query(getPostsByGroup, function (err, results, fields) {
-		if (err) {
-			res.status(500).send(
-				`There was an error fetching posts for group: ${err}`
-			);
-		} else {
-			res.status(200).send(JSON.stringify(results));
-		}
-	});
-});
-
 app.post("/create-post", (req, res) => {
 	//allows creation of new post
 	const createPost = `INSERT INTO Posts
@@ -201,6 +185,7 @@ app.get("/update-post-group", (req, res) => {
 });
 
 /* queries for groups */
+
 app.get("/get-groups", (req, res) => {
 	//sql query to get all groups in the database and return them
 	const getGroups = "select * from Groups;";
@@ -256,6 +241,22 @@ app.get("/get-members", (req, res) => {
 			);
 		} else {
 			res.send(JSON.stringify(results));
+		}
+	});
+});
+
+app.get("/get-posts-by-group", (req, res) => {
+	//show all posts in a given group
+	const getPostsByGroup = `select * from Posts
+    where group_posted = ${req.query.group_id};`;
+
+	db.pool.query(getPostsByGroup, function (err, results, fields) {
+		if (err) {
+			res.status(500).send(
+				`There was an error fetching posts for group: ${err}`
+			);
+		} else {
+			res.status(200).send(JSON.stringify(results));
 		}
 	});
 });
@@ -446,7 +447,10 @@ app.get("/get-user-reports-by-report", (req, res) => {
 app.post("/open-report", (req, res) => {
 	//opens a report on a given post
 	const openReport = `insert into Reports (reported_post, notes)
-	values (?, ?);`;
+	values (?, ?)
+	where not exists (
+		select reported_post from Reports where reported_post = ${req.query.post_id}
+	);`;
 	const vals = [req.body.post_id, req.body.notes];
 
 	//create user report by admin
