@@ -8,7 +8,6 @@ PORT = 2113;
 const db = require("./database/db-connector");
 
 /* queries for users */
-
 app.get("/get-users", (req, res) => {
 	//sql query to get all users in the database and return them
 	const getUsers = "select * from Users;";
@@ -235,7 +234,7 @@ app.get("/delete-group", (req, res) => {
 
 	db.pool.query(deleteGroup, function (err, results, fields) {
 		if (err) {
-			res.status(500)().send(`There was an error deleting group: ${err}`);
+			res.status(500).send(`There was an error deleting group: ${err}`);
 		} else {
 			res.status(200).send(`Group deleted.`);
 		}
@@ -281,7 +280,7 @@ app.get("/add-to-group", (req, res) => {
 app.get("/remove-from-group", (req, res) => {
 	//removes a user from a given group
 	const removeFromGroup = `delete from Group_Members
-		where group_id = ? and user_id = ?;`;
+		where group_id = ? and member_id = ?;`;
 	const vals = [req.query.group_id, req.query.user_id];
 
 	db.pool.query(removeFromGroup, vals, function (err, results, fields) {
