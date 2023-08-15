@@ -68,7 +68,7 @@ create table `Direct_Messages` (
 drop table if exists `Reports`;
 create table `Reports` ( 
 	report_id int auto_increment,
-    reported_post int not null,
+    reported_post int unique not null,
     status tinyint(1) default 0,
     notes longtext,
     primary key (report_id),
